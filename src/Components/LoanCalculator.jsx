@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   TextField,
@@ -12,30 +12,34 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
-} from '@mui/material';
+  Paper,
+  Grid,
+} from "@mui/material";
 
 const LoanCalculator = () => {
-  const [loanAmount, setLoanAmount] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [term, setTerm] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const [loanAmount, setLoanAmount] = useState("");
+  const [interestRate, setInterestRate] = useState("");
+  const [term, setTerm] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [emi, setEmi] = useState(0);
   const [schedule, setSchedule] = useState([]);
-  const [isCalculated, setIsCalculated] = useState(false); // New state variable
+  const [isCalculated, setIsCalculated] = useState(false);
 
-  const currencies = ['USD', 'EUR', 'INR', 'GBP', 'JPY', 'AUD', 'CAD'];
+  const currencies = ["USD", "EUR", "INR", "GBP", "JPY", "AUD", "CAD"];
 
   const calculateEMI = () => {
     const principle = parseFloat(loanAmount);
     const rate = parseFloat(interestRate) / (12 * 100); // Monthly interest
     const months = parseInt(term) * 12;
 
-    const emiValue = (principle * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1);
-    setEmi(emiValue.toFixed(2));
-    setIsCalculated(true); // Set to true after calculation
+    const emiValue =
+      (principle * rate * Math.pow(1 + rate, months)) /
+      (Math.pow(1 + rate, months) - 1);
 
-    // Generate Amortization Schedule
+    setEmi(emiValue.toFixed(2));
+    setIsCalculated(true);
+
+    // Generate amortization schedule
     let newSchedule = [];
     let remainingBalance = principle;
 
@@ -51,82 +55,99 @@ const LoanCalculator = () => {
         remainingBalance: remainingBalance.toFixed(2),
       });
     }
+
     setSchedule(newSchedule);
   };
 
   const resetInputs = () => {
-    setLoanAmount('');
-    setInterestRate('');
-    setTerm('');
+    setLoanAmount("");
+    setInterestRate("");
+    setTerm("");
     setEmi(0);
     setSchedule([]);
-    setIsCalculated(false); // Reset the calculation state
+    setIsCalculated(false);
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ padding: { xs: 2, md: 4 } }}>
+      <Typography variant="h4" gutterBottom >
         Loan Calculator Dashboard
       </Typography>
-      <Box sx={{ marginBottom: 2 }}>
-  <TextField
-    label="Loan Amount"
-    variant="outlined"
-    type="number"
-    value={loanAmount}
-    onChange={(e) => setLoanAmount(e.target.value)}
-    sx={{ marginRight: 2 }}
-  />
-  <TextField
-    label="Interest Rate (%)"
-    variant="outlined"
-    type="number"
-    value={interestRate}
-    onChange={(e) => setInterestRate(e.target.value)}
-    sx={{ marginRight: 2 }}
-  />
-  <TextField
-    label="Term (Years)"
-    variant="outlined"
-    type="number"
-    value={term}
-    onChange={(e) => setTerm(e.target.value)}
-    sx={{ marginRight: 2 }}
-  />
-  
-  <br /><br />
-  <Button variant="contained" onClick={calculateEMI}>
-    CALCULATE
-  </Button>
 
-  {/* Currency Selector Visible only after calculation */}
-  {isCalculated && (
-    <Box sx={{ marginTop: 2 }}>
-      <Select
-        value={currency}
-        onChange={(e) => setCurrency(e.target.value)}
-        sx={{ minWidth: 100, marginRight: 2 }}
-      >
-        {currencies.map((curr) => (
-          <MenuItem key={curr} value={curr}>{curr}</MenuItem>
-        ))}
-      </Select>
-      <Button variant="outlined" onClick={resetInputs}>
-        RESET TABLE
-      </Button>
-    </Box>
-  )}
-</Box>
+      <Grid container spacing={2} >
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Loan Amount"
+            type="number"
+            value={loanAmount}
+            onChange={(e) => setLoanAmount(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Interest Rate (%)"
+            type="number"
+            value={interestRate}
+            onChange={(e) => setInterestRate(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Term (Years)"
+            type="number"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+          />
+        </Grid>
+        {/* Button Section */}
+        <Grid item xs={12} textAlign="center" sx={{ marginTop: { xs: 2, sm: 3 } }}>
+          <Button variant="contained" onClick={calculateEMI}>
+            CALCULATE
+          </Button>
+        </Grid>
+        <br /><br />
+        {isCalculated && (
+          <>
+            <Box sx={{ mt: 3 }}>
+              {/* Box for Select (Currency) and Reset */}
+              <Grid container spacing={2} justifyContent="center" alignItems="center">
+                <Grid item xs={12} sm={6} md={3}>
+                  <Select
+                    fullWidth
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                  >
+                    {currencies.map((curr) => (
+                      <MenuItem key={curr} value={curr}>
+                        {curr}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
 
-      
-      {emi > 0 && (
-        <Typography variant="h6">
-          Monthly EMI: {currency} {emi}
-        </Typography>
-      )}
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button fullWidth variant="outlined" onClick={resetInputs}>
+                    RESET TABLE
+                  </Button>
+                </Grid>
+
+                {/* Monthly EMI */}
+                <Grid item xs={12}>
+                  <Typography variant="h6" align="center" mt={2}>
+                    Monthly EMI: {currency} {emi}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </>
+        )}
+      </Grid>
 
       {schedule.length > 0 && (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ marginTop: 4 }}>
           <Table>
             <TableHead>
               <TableRow>
