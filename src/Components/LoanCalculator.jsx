@@ -29,7 +29,7 @@ const LoanCalculator = () => {
 
   const calculateEMI = () => {
     const principle = parseFloat(loanAmount);
-    const rate = parseFloat(interestRate) / (12 * 100); // Monthly interest
+    const rate = parseFloat(interestRate) / (12 * 100);
     const months = parseInt(term) * 12;
 
     const emiValue =
@@ -39,7 +39,6 @@ const LoanCalculator = () => {
     setEmi(emiValue.toFixed(2));
     setIsCalculated(true);
 
-    // Generate amortization schedule
     let newSchedule = [];
     let remainingBalance = principle;
 
@@ -70,11 +69,11 @@ const LoanCalculator = () => {
 
   return (
     <Box sx={{ padding: { xs: 2, md: 4 } }}>
-      <Typography variant="h4" gutterBottom >
+      <Typography variant="h4" gutterBottom>
         Loan Calculator Dashboard
       </Typography>
 
-      <Grid container spacing={2} >
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
@@ -84,6 +83,7 @@ const LoanCalculator = () => {
             onChange={(e) => setLoanAmount(e.target.value)}
           />
         </Grid>
+
         <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
@@ -93,6 +93,7 @@ const LoanCalculator = () => {
             onChange={(e) => setInterestRate(e.target.value)}
           />
         </Grid>
+
         <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
@@ -102,73 +103,92 @@ const LoanCalculator = () => {
             onChange={(e) => setTerm(e.target.value)}
           />
         </Grid>
-        {/* Button Section */}
-        <Grid item xs={12} textAlign="center" sx={{ marginTop: { xs: 2, sm: 3 } }}>
-          <Button variant="contained" onClick={calculateEMI}>
-            CALCULATE
-          </Button>
-        </Grid>
-        <br /><br />
-        {isCalculated && (
-          <>
-            <Box sx={{ mt: 3 }}>
-              {/* Box for Select (Currency) and Reset */}
-              <Grid container spacing={2} justifyContent="center" alignItems="center">
-                <Grid item xs={12} sm={6} md={3}>
-                  <Select
-                    fullWidth
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                  >
-                    {currencies.map((curr) => (
-                      <MenuItem key={curr} value={curr}>
-                        {curr}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={3}>
-                  <Button fullWidth variant="outlined" onClick={resetInputs}>
-                    RESET TABLE
-                  </Button>
-                </Grid>
-
-                {/* Monthly EMI */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" align="center" mt={2}>
-                    Monthly EMI: {currency} {emi}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          </>
-        )}
       </Grid>
 
+      <Box mt={2}>
+        <Button variant="contained" onClick={calculateEMI}>
+          CALCULATE
+        </Button>
+      </Box>
+
+      {/* Display EMI */}
+      {isCalculated && (
+        <Box mt={4}>
+          <Typography variant="h6" align="center">
+            Monthly EMI: {currency} {emi}
+          </Typography>
+        </Box>
+      )}
+
+      {/* Amortization Table Section */}
       {schedule.length > 0 && (
-        <TableContainer component={Paper} sx={{ marginTop: 4 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Month</TableCell>
-                <TableCell>Principal</TableCell>
-                <TableCell>Interest</TableCell>
-                <TableCell>Remaining Balance</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {schedule.map((row) => (
-                <TableRow key={row.month}>
-                  <TableCell>{row.month}</TableCell>
-                  <TableCell>{currency} {row.principal}</TableCell>
-                  <TableCell>{currency} {row.interest}</TableCell>
-                  <TableCell>{currency} {row.remainingBalance}</TableCell>
+        <Box mt={4}>
+          {/* Top controls and title */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            {/* Heading */}
+            <Typography variant="h6">
+              Amortization Schedule ({currency})
+            </Typography>
+
+            {/* Currency and Reset */}
+            <Box display="flex" gap={2}>
+              <Select
+                size="small"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                {currencies.map((curr) => (
+                  <MenuItem key={curr} value={curr}>
+                    {curr}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={resetInputs}
+              >
+                RESET TABLE
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Amortization Table */}
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Month</TableCell>
+                  <TableCell>Principal</TableCell>
+                  <TableCell>Interest</TableCell>
+                  <TableCell>Remaining Balance</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {schedule.map((row) => (
+                  <TableRow key={row.month}>
+                    <TableCell>{row.month}</TableCell>
+                    <TableCell>
+                      {currency} {row.principal}
+                    </TableCell>
+                    <TableCell>
+                      {currency} {row.interest}
+                    </TableCell>
+                    <TableCell>
+                      {currency} {row.remainingBalance}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
     </Box>
   );
